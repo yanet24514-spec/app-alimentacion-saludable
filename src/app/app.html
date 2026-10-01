@@ -1,93 +1,136 @@
-<!-- Encabezado al estilo TheMealDB -->
+<!-- Header Estilo TheMealDB -->
 <header class="bg-dark text-white text-center py-4 mb-4 border-bottom border-warning border-3 shadow">
   <div class="container">
-    <h1 class="display-5 fw-bold text-warning">TheMealDB API</h1>
-    <p class="lead mb-0 text-light">Explorador y Consultor de Recetas de Cocina</p>
+    <h1 class="display-6 fw-bold text-warning mb-1">TheMealDB Explorer</h1>
+    <p class="text-light mb-0">Consumo de API de Recetas Internacionales</p>
   </div>
 </header>
 
 <div class="container mb-5">
-  <!-- Panel de Control / Búsqueda -->
-  <div class="card bg-dark text-white border-warning shadow mb-4">
-    <div class="card-header border-warning bg-transparent text-warning fw-bold">
-      Panel de Búsqueda de Platillos
+  <div class="row g-4">
+    
+    <!-- Panel Izquierdo: Controles -->
+    <div class="col-lg-5">
+      <div class="card bg-dark text-white border-warning shadow-lg h-100">
+        <div class="card-header bg-black text-warning border-warning py-3">
+          <h2 class="h5 mb-0 fw-bold">Panel de Búsqueda</h2>
+        </div>
+        
+        <div class="card-body p-4 d-flex flex-column justify-content-between">
+          
+          <!-- Búsqueda libre -->
+          <div class="mb-3">
+            <label class="form-label text-warning fw-bold small text-uppercase">Búsqueda General (Nombre o ID)</label>
+            <input 
+              type="text" 
+              [(ngModel)]="busqueda" 
+              class="form-control bg-secondary text-white border-0 shadow-sm" 
+              placeholder="Ej. Arrabiata, 52772...">
+          </div>
+
+          <!-- Selector rápido para Método 4 -->
+          <div class="mb-3">
+            <label class="form-label text-info fw-bold small text-uppercase">Seleccionar Categoría (Método 4)</label>
+            <select [(ngModel)]="categoriaSeleccionada" class="form-select bg-secondary text-white border-0 shadow-sm">
+              <option value="Seafood">Seafood (Mariscos)</option>
+              <option value="Beef">Beef (Carne de Res)</option>
+              <option value="Chicken">Chicken (Pollo)</option>
+              <option value="Dessert">Dessert (Postres)</option>
+              <option value="Pasta">Pasta</option>
+              <option value="Vegetarian">Vegetarian (Vegetariano)</option>
+            </select>
+          </div>
+
+          <hr class="border-secondary my-2">
+
+          <!-- Botones de Métodos -->
+          <div class="d-grid gap-3">
+            <div>
+              <span class="badge bg-warning text-dark mb-1">Método 1</span>
+              <button class="btn btn-warning w-100 fw-bold shadow-sm" (click)="metodo1_BuscarPorNombre()">
+                Buscar por Nombre
+              </button>
+            </div>
+
+            <div>
+              <span class="badge bg-info text-dark mb-1">Método 2</span>
+              <button class="btn btn-outline-info w-100 fw-bold shadow-sm" (click)="metodo2_RecetaAleatoria()">
+                Receta Aleatoria
+              </button>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <span class="badge bg-secondary mb-1">Método 3</span>
+                <button class="btn btn-outline-light w-100 fw-bold shadow-sm" (click)="metodo3_BuscarPorId()">
+                  Por ID
+                </button>
+              </div>
+              <div class="col-6">
+                <span class="badge bg-success mb-1">Método 4</span>
+                <button class="btn btn-success text-white w-100 fw-bold shadow-sm" (click)="metodo4_BuscarPorCategoria()">
+                  Por Categoría
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
-    <div class="card-body p-4">
+
+    <!-- Panel Derecho: Visor de Receta con Foto e Instrucciones -->
+    <div class="col-lg-7">
       
-      <!-- Entrada principal y Método 1 -->
-      <div class="row g-2 mb-3">
-        <div class="col-md-8">
-          <input 
-            type="text" 
-            [(ngModel)]="busqueda" 
-            class="form-control form-control-lg bg-secondary text-white border-0" 
-            placeholder="Escribe un platillo, categoría o ID...">
-        </div>
-        <div class="col-md-4">
-          <button class="btn btn-warning btn-lg w-100 fw-bold" (click)="metodo1_BuscarPorNombre()">
-            1. Buscar por Nombre
-          </button>
+      <div *ngIf="!recetaActual" class="card bg-dark text-white border-secondary shadow-lg text-center p-5 h-100 d-flex justify-content-center align-items-center">
+        <div class="text-muted">
+          <h3 class="h4 text-warning mb-3">Sin Receta Seleccionada</h3>
+          <p class="mb-0">Elige una categoría o presiona un método para realizar una consulta.</p>
         </div>
       </div>
 
-      <!-- Botones para Métodos 2, 3 y 4 -->
-      <div class="row g-2">
-        <div class="col-md-4">
-          <button class="btn btn-outline-warning w-100 fw-bold" (click)="metodo2_RecetaAleatoria()">
-            2. Receta Aleatoria
-          </button>
+      <div *ngIf="recetaActual" class="card bg-dark text-white border-warning shadow-lg">
+        <div class="card-header bg-black border-warning py-3 text-center">
+          <span class="badge bg-warning text-dark mb-2">ID: {{ recetaActual.idMeal }}</span>
+          <h2 class="card-title text-warning fw-bold h3 mb-0">
+            {{ recetaActual.strMeal }}
+          </h2>
         </div>
-        <div class="col-md-4">
-          <button class="btn btn-outline-info w-100 fw-bold" (click)="metodo3_BuscarPorId()">
-            3. Buscar por ID
-          </button>
+
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-center gap-3 mb-4">
+            <span class="badge bg-outline border border-warning text-warning px-3 py-2" *ngIf="recetaActual.strCategory">
+              Categoría: <strong>{{ recetaActual.strCategory }}</strong>
+            </span>
+            <span class="badge bg-outline border border-info text-info px-3 py-2" *ngIf="recetaActual.strArea">
+              Origen: <strong>{{ recetaActual.strArea }}</strong>
+            </span>
+          </div>
+
+          <!-- Muestra de Imagen Garantizada -->
+          <div class="text-center mb-4" *ngIf="recetaActual.strMealThumb">
+            <img
+              [src]="recetaActual.strMealThumb"
+              [alt]="recetaActual.strMeal"
+              style="max-width: 280px; width: 100%; height: auto;"
+              class="img-fluid rounded-3 border border-2 border-warning shadow">
+          </div>
+
+          <!-- Instrucciones -->
+          <div class="border-top border-secondary pt-3" *ngIf="recetaActual.strInstructions">
+            <h3 class="h5 text-warning fw-bold mb-3">Instrucciones de Preparación</h3>
+            <div class="bg-black bg-opacity-50 p-3 rounded border border-secondary text-light lh-lg" style="white-space: pre-line; max-height: 220px; overflow-y: auto;">
+              {{ recetaActual.strInstructions }}
+            </div>
+          </div>
         </div>
-        <div class="col-md-4">
-          <button class="btn btn-outline-success w-100 fw-bold" (click)="metodo4_BuscarPorCategoria()">
-            4. Buscar por Categoría
-          </button>
+
+        <div class="card-footer bg-black border-warning text-center text-muted small py-2">
+          Fuente de datos: TheMealDB API
         </div>
       </div>
 
     </div>
-  </div>
 
-  <!-- Detalle del Platillo (Estilo Tarjeta TheMealDB) -->
-  <div *ngIf="recetaActual" class="card bg-dark text-white border-warning shadow-lg mx-auto" style="max-width: 750px;">
-    <div class="card-header border-warning text-center py-3">
-      <h2 class="card-title text-warning fw-bold mb-0">
-        {{ recetaActual.strMeal }}
-      </h2>
-    </div>
-
-    <div class="card-body p-4">
-      <!-- Datos rápidos -->
-      <div class="d-flex justify-content-around text-warning small border-top border-bottom border-secondary py-2 mb-4">
-        <span><strong>ID:</strong> {{ recetaActual.idMeal }}</span>
-        <span><strong>Categoría:</strong> {{ recetaActual.strCategory }}</span>
-        <span *ngIf="recetaActual.strArea"><strong>Origen:</strong> {{ recetaActual.strArea }}</span>
-      </div>
-
-      <!-- Imagen centrada -->
-      <div class="text-center mb-4">
-        <img
-          [src]="recetaActual.strMealThumb"
-          [alt]="recetaActual.strMeal"
-          width="320"
-          class="img-fluid rounded border border-warning shadow">
-      </div>
-
-      <!-- Instrucciones -->
-      <h3 class="h5 text-warning border-bottom border-secondary pb-2 mb-3">
-        Instrucciones de Preparación
-      </h3>
-      <p class="card-text text-light lh-lg" style="white-space: pre-line;">
-        {{ recetaActual.strInstructions }}
-      </p>
-    </div>
-
-    <div class="card-footer border-warning text-center text-muted small py-2">
-      Fuente: TheMealDB API
-    </div>
   </div>
 </div>
